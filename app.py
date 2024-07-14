@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from transformers import pipeline
 
@@ -10,8 +11,8 @@ prompt = st.text_input("Enter your prompt:")
 # Model selection
 model_choice = st.selectbox("Choose a model:", ["GPT", "BERT", "BART", "Llama", "Mistral"])
 
-# Hugging Face API token (replace with your token)
-huggingface_token = "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"
+# Hugging Face API token
+huggingface_token = os.getenv("HF_TOKEN", default="")
 
 # Dictionary to load models
 models = {
