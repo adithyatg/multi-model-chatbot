@@ -1,38 +1,50 @@
 import streamlit as st
 from transformers import pipeline
 
-st.title("Chatbot")
+# Title
+st.title("Model Selection Chatbot")
 
+# Prompt input
 prompt = st.text_input("Enter your prompt:")
 
-model_choice = st.selectbox("Choose a model:", ["gpt-3.5-turbo", "bert", "bart", "llama", "mistral"])
+# Model selection
+model_choice = st.selectbox("Choose a model:", ["GPT", "BERT", "BART", "Llama", "Mistral"])
+
+# Hugging Face API token (replace with your token)
+huggingface_token = "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"
 
 # Dictionary to load models
 models = {
-    "gpt-3.5-turbo": "gpt-3.5-turbo",
-    "bert": "bert-base-uncased",
-    "bart": "facebook/bart-large-cnn",
-    "llama": "facebook/llama",
-    "mistral": "mistral-ai/mistral-7b"
+    "GPT": "openai-community/openai-gpt",
+    "BERT": "deepset/bert-base-cased-squad2",
+    "BART": "facebook/bart-large",
+    "Llama": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "Mistral": "mistralai/Mistral-7B-v0.1" 
 }
 
 # Submit button
 if st.button("Submit"):
-    # Load the selected model
-    if model_choice == "bert":
-        model = pipeline('fill-mask', model=models[model_choice])
-    elif model_choice == "bart":
-        model = pipeline('summarization', model=models[model_choice])
-    else:
-        model = pipeline('text-generation', model=models[model_choice])
-        
-    # Generate response
-    if model_choice == "bert":
-        response = model(f"{prompt} [MASK].")
-        st.write(response[0]['sequence'])
-    elif model_choice == "bart":
-        response = model(prompt)
-        st.write(response[0]['summary_text'])
-    else:
-        response = model(prompt)
-        st.write(response[0]['generated_text'])
+    try:
+        # Load the selected model
+        if model_choice == "BERT":
+            model = pipeline('question-answering', model=models[model_choice], use_auth_token=huggingface_token)
+            response = model(question=prompt, context=prompt)
+            st.write(response['answer'])
+        elif model_choice == "BART":
+            model = pipeline('summarization', model=models[model_choice], use_auth_token=huggingface_token)
+            response = model(prompt)
+            st.write(response[0]['summary_text'])
+        elif model_choice == "GPT":
+            model = pipeline('text-generation', model=models[model_choice], use_auth_token=huggingface_token)
+            response = model(prompt)
+            st.write(response[0]['generated_text'])
+        elif model_choice == "Llama":
+            model = pipeline('text-generation', model=models[model_choice], use_auth_token=huggingface_token)
+            response = model(prompt)
+            st.write(response[0]['generated_text'])
+        elif model_choice == "Mistral":
+            model = pipeline('text-generation', model=models[model_choice], use_auth_token=huggingface_token)
+            response = model(prompt)
+            st.write(response[0]['generated_text'])
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
