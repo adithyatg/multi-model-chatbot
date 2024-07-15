@@ -18,8 +18,8 @@ tutorial_running(27)
 st.title("Haystack Pipeline Demo")
 uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
 
-# Input for OpenAI API token
-openai_api_key = st.secrets["openai_api_key"] if "openai_api_key" in st.secrets else st.text_input("Enter OpenAI API Key:", type="password")
+# Input for OpenAI API key
+openai_api_key = "sk-proj-RFxwtsKgU22C66rt7ZSlT3BlbkFJMTErq0GLFGSGvfCOezWw"
 
 if uploaded_file is not None:
     # Save the uploaded file to a temporary location
@@ -67,12 +67,8 @@ if uploaded_file is not None:
     # Initialize PromptBuilder
     prompt_builder = PromptBuilder(template=template)
 
-    # Initialize OpenAIGenerator without the token argument
-    generator = OpenAIGenerator(model="gpt-3.5-turbo")
-
-    # Set the API key dynamically using set_token method
-    if openai_api_key:
-        generator.set_token(openai_api_key)
+    # Initialize OpenAIGenerator with static API key
+    generator = OpenAIGenerator(model="gpt-3.5-turbo", api_key=openai_api_key)
 
     # Initialize Pipeline
     basic_rag_pipeline = Pipeline()
