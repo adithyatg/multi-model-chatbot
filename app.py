@@ -1,4 +1,6 @@
 import streamlit as st
+import os
+import tempfile
 from haystack.telemetry import tutorial_running
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 from datasets import load_dataset
@@ -16,9 +18,17 @@ tutorial_running(27)
 st.title("Haystack Pipeline Demo")
 uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
 
+# Input for OpenAI API token
+openai_api_key = st.secrets["openai_api_key"] if "openai_api_key" in st.secrets else st.text_input("Enter OpenAI API Key:", type="password")
+
 if uploaded_file is not None:
+    # Save the uploaded file to a temporary location
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(uploaded_file.read())
+        temp_file_path = temp_file.name
+
     # Load dataset from uploaded CSV using datasets
-    dataset = load_dataset('csv', data_files={'train': uploaded_file})
+    dataset = load_dataset('csv', data_files={'train': temp_file_path})
     dataset = dataset['train'].map(lambda example: {'title': example['title'], 'abstract': example['abstract']})
 
     # Convert dataset into Haystack Documents
@@ -57,8 +67,8 @@ if uploaded_file is not None:
     # Initialize PromptBuilder
     prompt_builder = PromptBuilder(template=template)
 
-    # Initialize OpenAIGenerator
-    generator = OpenAIGenerator(model="gpt-3.5-turbo")
+    # Initialize OpenAIGenerator with dynamic API key
+    generator = OpenAIGenerator(model="gpt-3.5-turbo", token=openai_api_key)
 
     # Initialize Pipeline
     basic_rag_pipeline = Pipeline()
@@ -82,5 +92,9 @@ if uploaded_file is not None:
             st.write(response["llm"]["replies"][0])
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
+    # Clean up: Remove the temporary file
+    os.remove(temp_file_path)
+
 else:
     st.info("Please upload a CSV file to begin.")
