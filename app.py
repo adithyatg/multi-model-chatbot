@@ -11,7 +11,7 @@ from haystack.components.builders import PromptBuilder
 from haystack.components.generators import OpenAIGenerator
 from haystack import Pipeline
 
-# Check tutorial running
+# Check if tutorial is running
 tutorial_running(27)
 
 # Title and file upload
@@ -19,7 +19,7 @@ st.title("Haystack Pipeline Demo")
 uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
 
 # Input for OpenAI API key
-openai_api_key = "sk-proj-RFxwtsKgU22C66rt7ZSlT3BlbkFJMTErq0GLFGSGvfCOezWw"
+openai_api_key = st.text_input("Enter your OpenAI API key:", type="password")
 
 if uploaded_file is not None:
     # Save the uploaded file to a temporary location
