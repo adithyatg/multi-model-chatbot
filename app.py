@@ -10,8 +10,11 @@ from haystack.components.generators import OpenAIGenerator
 from haystack import Pipeline
 import os
 
-# Load API key from Streamlit Secrets
-openai_api_key = st.secrets["openai_api_key"]
+# Load API key from Streamlit Secrets or environment variable
+if "OPENAI_API_KEY" in os.environ:
+    openai_api_key = os.environ["OPENAI_API_KEY"]
+else:
+    openai_api_key = st.secrets["openai_api_key"]
 
 # Initialize document store
 document_store = InMemoryDocumentStore()
@@ -49,8 +52,12 @@ Answer:
 """
 prompt_builder = PromptBuilder(template=template)
 
-# Initialize OpenAIGenerator with static API key
-generator = OpenAIGenerator(model="gpt-3.5-turbo", api_key=openai_api_key)
+# Initialize OpenAIGenerator
+generator = OpenAIGenerator(model="gpt-3.5-turbo")
+
+# Set API key if available
+if openai_api_key:
+    generator.client.set_api_key(openai_api_key)
 
 # Initialize Pipeline
 basic_rag_pipeline = Pipeline()
