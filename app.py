@@ -19,7 +19,7 @@ st.title("Haystack Pipeline Demo")
 uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
 
 # Input for OpenAI API key
-openai_api_key = st.text_input("Enter your OpenAI API key:", type="password")
+openai_api_key = "sk-proj-RFxwtsKgU22C66rt7ZSlT3BlbkFJMTErq0GLFGSGvfCOezWw"
 
 if uploaded_file is not None:
     # Save the uploaded file to a temporary location
