@@ -67,8 +67,12 @@ if uploaded_file is not None:
     # Initialize PromptBuilder
     prompt_builder = PromptBuilder(template=template)
 
-    # Initialize OpenAIGenerator with dynamic API key
-    generator = OpenAIGenerator(model="gpt-3.5-turbo", token=openai_api_key)
+    # Initialize OpenAIGenerator without the token argument
+    generator = OpenAIGenerator(model="gpt-3.5-turbo")
+
+    # Set the API key dynamically using set_token method
+    if openai_api_key:
+        generator.set_token(openai_api_key)
 
     # Initialize Pipeline
     basic_rag_pipeline = Pipeline()
